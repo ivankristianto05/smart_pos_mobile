@@ -4,12 +4,15 @@ import '../../data/auth_service.dart';
 import '../../data/auth_repository.dart';
 import '../../domain/auth_state.dart';
 import '../notifier/auth_notifier.dart';
-
+import '../../../../core/network/dio_client.dart';
 
 /// SERVICE
 final authServiceProvider =
     Provider<AuthService>((ref) {
-  return AuthService();
+
+  return AuthService(
+    ref.read(dioProvider),
+  );
 });
 
 
@@ -21,8 +24,7 @@ final authRepositoryProvider =
   );
 });
 
-
-/// NOTIFIER
+/// NOTIFIER ✅ SINGLE SOURCE OF TRUTH
 final authProvider =
     StateNotifierProvider<AuthNotifier, AuthState>(
   (ref) {

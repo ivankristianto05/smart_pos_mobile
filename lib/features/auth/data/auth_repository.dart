@@ -10,10 +10,8 @@ class AuthRepository {
     String password,
   ) async {
     try {
-      final token = await _service.login(
-        email: email,
-        password: password,
-      );
+      final token =
+          await _service.login(email, password);
 
       return token;
     } catch (e) {

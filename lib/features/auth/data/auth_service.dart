@@ -1,16 +1,27 @@
+import 'package:dio/dio.dart';
+
 class AuthService {
-  Future<String> login({
-    required String email,
-    required String password,
-  }) async {
+  final Dio dio;
 
-    await Future.delayed(const Duration(seconds: 2));
+  AuthService(this.dio);
 
-    if (email == "admin@test.com" &&
+  Future<String> login(
+    String email,
+    String password,
+  ) async {
+
+    /// ✅ SIMULASI API DELAY
+    await Future.delayed(
+      const Duration(seconds: 1),
+    );
+
+    /// ✅ FAKE VALIDATION
+    if (email == "admin@mail.com" &&
         password == "123456") {
-      return "dummy_access_token";
+
+      return "mock_token_123";
     }
 
-    throw Exception("Email atau password salah");
+    throw Exception("Email / Password salah");
   }
 }

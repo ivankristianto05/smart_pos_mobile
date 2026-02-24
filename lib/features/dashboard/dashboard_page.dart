@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_pos_mobile/features/auth/presentation/provider/auth_provider.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
     return Scaffold(
       appBar: AppBar(title: const Text("Dashboard")),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            context.go('/login');
+            ref.read(authProvider.notifier).logout();
           },
-          child: const Text("Back to Login"),
+          child: const Text('Logout'),
         ),
       ),
     );
