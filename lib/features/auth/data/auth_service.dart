@@ -5,23 +5,43 @@ class AuthService {
 
   AuthService(this.dio);
 
-  Future<String> login(
-    String email,
-    String password,
-  ) async {
+  Future<Map<String, String>> login(
+  String email,
+  String password,
+) async {
 
-    /// ✅ SIMULASI API DELAY
+  await Future.delayed(
+    const Duration(seconds: 1),
+  );
+
+  if (email == "admin@mail.com" &&
+      password == "123456") {
+
+    return {
+      "access_token": "mock_access_token",
+      "refresh_token": "mock_refresh_token",
+    };
+  }
+
+  throw Exception("Login gagal");
+}
+
+
+  /// ⭐ MOCK REFRESH TOKEN
+  Future<String> refreshToken(
+      String refreshToken) async {
+
     await Future.delayed(
       const Duration(seconds: 1),
     );
 
-    /// ✅ FAKE VALIDATION
-    if (email == "admin@mail.com" &&
-        password == "123456") {
+    /// simulasi refresh berhasil
+    if (refreshToken ==
+        "mock_refresh_token") {
 
-      return "mock_token_123";
+      return "new_access_token";
     }
 
-    throw Exception("Email / Password salah");
+    throw Exception("Refresh gagal");
   }
 }

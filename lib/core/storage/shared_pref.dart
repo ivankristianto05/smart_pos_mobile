@@ -13,6 +13,13 @@ class AppPreferences {
     await _prefs.setString('token', token);
   }
 
+  static Future setRefreshToken(String token) async {
+    await _prefs.setString('refresh_token', token);
+  }
+static String? getRefreshToken() {
+    return _prefs.getString('refresh_token');
+  }
+
   static String? getToken() {
     return _prefs.getString('token');
   }

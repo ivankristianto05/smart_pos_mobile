@@ -5,17 +5,23 @@ class AuthRepository {
 
   AuthRepository(this._service);
 
-  Future<String> login(
+  Future<Map<String, String>> login(
     String email,
     String password,
   ) async {
-    try {
-      final token =
-          await _service.login(email, password);
 
-      return token;
-    } catch (e) {
-      throw Exception("Login gagal");
-    }
+    return await _service.login(
+      email,
+      password,
+    );
+  }
+
+  Future<String> refreshToken(
+    String refreshToken,
+  ) async {
+
+    return await _service.refreshToken(
+      refreshToken,
+    );
   }
 }
