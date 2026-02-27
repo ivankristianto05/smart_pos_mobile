@@ -1,12 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smart_pos_mobile/features/dashboard/dashboard_page.dart';
+import 'package:smart_pos_mobile/features/dashboard/presentation/pages/dashboard_page.dart';
 
 import '../../features/auth/presentation/provider/auth_provider.dart';
 import '../../features/auth/domain/auth_state.dart';
 
 import '../../features/auth/presentation/pages/login_page.dart';
-
+import '../../features/dashboard/presentation/pages/dashboard_page.dart';
+import '../../features/pos/presentation/pages/pos_page.dart';
 final appRouterProvider = Provider<GoRouter>((ref) {
 
   /// ⭐ LISTEN AUTH STATE
@@ -41,6 +42,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/dashboard',
         builder: (_, __) => const DashboardPage(),
+      ),
+      GoRoute(
+        path: '/pos',
+        builder: (context, state) =>
+            const PosPage(),
       ),
     ],
   );

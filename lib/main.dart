@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_pos_mobile/core/initialization/auth_initializer.dart';
 
 import 'core/router/app_router.dart';
 import 'core/storage/shared_pref.dart';
@@ -9,12 +10,13 @@ import 'features/auth/presentation/provider/auth_provider.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  /// INIT STORAGE
   await AppPreferences.init();
 
   runApp(
     const ProviderScope(
-      child: MyApp(),
+      child: AuthInitializer(
+        child: MyApp(),
+      ),
     ),
   );
 }
@@ -24,9 +26,6 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-
-    /// CHECK AUTH SAAT START
-    ref.read(authProvider.notifier).checkAuth();
 
     /// ✅ AMBIL ROUTER DARI PROVIDER
     final router = ref.watch(appRouterProvider);
