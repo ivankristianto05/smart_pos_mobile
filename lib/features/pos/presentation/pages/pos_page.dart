@@ -28,23 +28,32 @@ class PosPage extends StatelessWidget {
           /// ========================
           /// RIGHT SIDE - CART + PAYMENT
           /// ========================
-          Container(
-            width: 350,
-            color: AppColors.surface,
-
-            child: Column(
-              children: [
-
-                /// CART LIST
-                const Expanded(
-                  child: CartPanel(),
-                ),
-
-                /// PAYMENT AREA
-                const PaymentBar(),
-              ],
-            ),
-          ),
+Expanded(
+  flex: 2,
+  child: Container(
+    margin: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(16),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.08),
+          blurRadius: 12,
+          offset: const Offset(0, 4),
+        )
+      ],
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Column(
+        children: const [
+          Expanded(child: CartPanel()),
+          PaymentBar(),
+        ],
+      ),
+    ),
+  ),
+),
         ],
       ),
     );

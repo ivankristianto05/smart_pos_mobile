@@ -51,7 +51,7 @@ class MyApp extends ConsumerWidget {
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          elevation: 0,
+          elevation: 2,
           centerTitle: true,
         ),
 
