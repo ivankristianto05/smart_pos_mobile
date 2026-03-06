@@ -4,17 +4,19 @@ import '../../../../core/theme/app_colors.dart';
 class ProductCard extends StatelessWidget {
   final String name;
   final double price;
+  final VoidCallback onTap;
 
   const ProductCard({
     super.key,
     required this.name,
     required this.price,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       child: Card(
         color: AppColors.surface,
         elevation: 3,
