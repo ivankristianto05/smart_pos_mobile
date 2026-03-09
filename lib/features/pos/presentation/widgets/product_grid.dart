@@ -20,14 +20,33 @@ class ProductGrid extends StatelessWidget {
       itemBuilder: (context, index) {
 
         final product = ProductModel(
-          id: index.toString(),
-          name: "Product $index",
-          price: 10000,
-        );
+  id: index.toString(),
+  name: "Product $index",
+  basePrice: 10000,
+
+  variants: {
+    "Size": {
+      "Regular": 0,
+      "Large": 5000,
+    },
+
+    "Sugar": {
+      "Normal": 0,
+      "Less Sugar": 0,
+      "No Sugar": 0,
+    }
+  },
+
+  toppings: {
+    "Cheese": 3000,
+    "Boba": 4000,
+    "Whipped Cream": 5000,
+  },
+);
 
         return ProductCard(
           name: product.name,
-          price: product.price,
+          price: product.basePrice,
           onTap: () {
             showDialog(
               context: context,
