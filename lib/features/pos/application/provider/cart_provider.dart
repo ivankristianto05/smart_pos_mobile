@@ -18,9 +18,9 @@ class CartController extends StateNotifier<List<CartItemModel>> {
 }
   /// REMOVE ITEM
   void removeItem(int index) {
-    final newList = [...state];
-    newList.removeAt(index);
-    state = newList;
+    final updated = [...state];
+    updated.removeAt(index);
+    state = updated;
   }
 
   /// CLEAR CART
@@ -32,6 +32,33 @@ class CartController extends StateNotifier<List<CartItemModel>> {
   double get totalPrice {
     return state.fold(0.0, (sum, item) => sum + item.totalPrice);
   }
+  void increaseQty(int index) {
+  final updated = [...state];
+
+  final item = updated[index];
+
+  updated[index] = item.copyWith(
+    quantity: item.quantity + 1,
+  );
+
+  state = updated;
+}
+
+void decreaseQty(int index) {
+  final updated = [...state];
+
+  final item = updated[index];
+
+  if (item.quantity > 1) {
+    updated[index] = item.copyWith(
+      quantity: item.quantity - 1,
+    );
+  } else {
+    updated.removeAt(index);
+  }
+
+  state = updated;
+}
 }
 
 /// PROVIDER

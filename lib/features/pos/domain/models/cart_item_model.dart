@@ -26,4 +26,21 @@ class CartItemModel {
   });
 
   double get totalPrice => unitPrice * quantity;
+  CartItemModel copyWith({
+  ProductModel? product,
+  Map<String, String>? selectedVariants,
+  List<String>? selectedToppings,
+  int? quantity,
+  String? note,
+  double? unitPrice,
+}) {
+  return CartItemModel(
+    product: product ?? this.product,
+    selectedVariants: selectedVariants ?? this.selectedVariants,
+    selectedToppings: selectedToppings ?? this.selectedToppings,
+    quantity: quantity ?? this.quantity,
+    note: note ?? this.note,
+    unitPrice: unitPrice ?? this.unitPrice,
+  );
+}
 }
