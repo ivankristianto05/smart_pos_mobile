@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/cart_provider.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/saved_order_active_provider.dart';
 import '../../../../core/theme/app_colors.dart';
+import 'dialogs/save_order_dialog.dart';
+import 'dialogs/open_order_dialog.dart';
+import '../../application/provider/saved_order_provider.dart';
 
 class PaymentBar extends ConsumerWidget {
   const PaymentBar({super.key});
@@ -11,6 +15,7 @@ class PaymentBar extends ConsumerWidget {
 
     final cartItems = ref.watch(cartProvider);
     final bool hasOrder = cartItems.isNotEmpty;
+    final activeOrderId = ref.watch(activeSavedOrderIdProvider);
 
     return Container(
       height: 85,
@@ -45,7 +50,9 @@ class PaymentBar extends ConsumerWidget {
 
               label: FittedBox(
                 child: Text(
-                  hasOrder
+                  activeOrderId != null
+                  ?"UPDATE ORDER"
+                  :hasOrder
                       ? "SAVE ORDER"
                       : "OPEN ORDER",
                   style: const TextStyle(
@@ -69,12 +76,65 @@ class PaymentBar extends ConsumerWidget {
               ),
 
               onPressed: () {
-                if (hasOrder) {
-                  debugPrint("Saving Order...");
-                } else {
-                  debugPrint("Opening Order...");
-                }
-              },
+
+  final savedOrders = ref.read(savedOrderProvider);
+  final activeOrderId = ref.read(activeSavedOrderIdProvider);
+
+  if (hasOrder) {
+
+    /// ===============================
+    /// UPDATE ORDER (jika sudah ada)
+    /// ===============================
+    if (activeOrderId != null) {
+
+  /// UPDATE ORDER
+  ref.read(savedOrderProvider.notifier)
+      .updateOrder(activeOrderId, cartItems);
+
+  /// KOSONGKAN CART
+  ref.read(cartProvider.notifier).clearCart();
+
+  /// RESET ACTIVE ORDER
+  ref.read(activeSavedOrderIdProvider.notifier).state = null;
+
+  /// FEEDBACK USER
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text("Order berhasil diperbarui"),
+      duration: Duration(seconds: 2),
+    ),
+  );
+
+  return;
+}
+
+    /// ===============================
+    /// SAVE ORDER BARU
+    /// ===============================
+    showDialog(
+      context: context,
+      builder: (_) => SaveOrderDialog(
+        onSave: (name) {
+
+          ref.read(savedOrderProvider.notifier)
+              .saveOrder(name, cartItems);
+
+          ref.read(cartProvider.notifier).clearCart();
+        },
+      ),
+    );
+
+  } else {
+
+    /// ===============================
+    /// OPEN ORDER
+    /// ===============================
+    showDialog(
+  context: context,
+  builder: (_) => const OpenOrderDialog(),
+);
+  }
+}
             ),
           ),
 

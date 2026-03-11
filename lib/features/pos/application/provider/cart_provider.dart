@@ -22,11 +22,13 @@ class CartController extends StateNotifier<List<CartItemModel>> {
     updated.removeAt(index);
     state = updated;
   }
+  void setCart(List<CartItemModel> items) {
+  state = items;
+}
 
-  /// CLEAR CART
-  void clearCart() {
-    state = [];
-  }
+void clearCart() {
+  state = [];
+}
 
   /// TOTAL PRICE
   double get totalPrice {

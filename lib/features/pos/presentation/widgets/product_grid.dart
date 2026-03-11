@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smart_pos_mobile/features/pos/domain/models/product_model.dart';
 import 'product_card.dart';
-import '../widgets/product_dialog.dart';
+import 'dialogs/product_dialog.dart';
 
 class ProductGrid extends StatelessWidget {
   const ProductGrid({super.key});
