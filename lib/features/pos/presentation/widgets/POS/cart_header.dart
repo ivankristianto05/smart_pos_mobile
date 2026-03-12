@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../application/provider/cart_provider.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../application/provider/cart_provider.dart';
 
 class CartHeader extends ConsumerWidget {
   const CartHeader({super.key});

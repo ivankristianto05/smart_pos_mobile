@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../widgets/product_grid.dart';
-import '../widgets/cart_panel.dart';
-import '../widgets/payment_bar.dart';
+import '../widgets/POS/product_grid.dart';
+import '../widgets/POS/cart_panel.dart';
+import '../widgets/POS/payment_bar.dart';
 import '../../../../core/theme/app_colors.dart';
 class PosPage extends StatelessWidget {
   const PosPage({super.key});

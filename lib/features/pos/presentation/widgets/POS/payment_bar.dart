@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/cart_provider.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/saved_order_active_provider.dart';
-import '../../../../core/theme/app_colors.dart';
-import 'dialogs/save_order_dialog.dart';
-import 'dialogs/open_order_dialog.dart';
-import '../../application/provider/saved_order_provider.dart';
+import 'package:smart_pos_mobile/features/pos/presentation/pages/payment/payment_screen.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../dialogs/save_order_dialog.dart';
+import '../dialogs/open_order_dialog.dart';
+import '../../../application/provider/saved_order_provider.dart';
 
 class PaymentBar extends ConsumerWidget {
   const PaymentBar({super.key});
@@ -186,10 +187,15 @@ class PaymentBar extends ConsumerWidget {
     ),
 
     onPressed: hasOrder
-        ? () {
-            debugPrint("Processing Payment...");
-          }
-        : null,
+    ? () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const PaymentScreen(),
+          ),
+        );
+      }
+    : null,
   ),
 ),
         ],

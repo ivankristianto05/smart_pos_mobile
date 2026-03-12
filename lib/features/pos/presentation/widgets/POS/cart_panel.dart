@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../application/provider/cart_provider.dart';
-import '../widgets/cart_header.dart';
-import '../widgets/order_type_selector.dart';
-import '../widgets/cart_list.dart';
-import '../widgets/cart_total.dart';
+import '../../../application/provider/cart_provider.dart';
+import 'cart_header.dart';
+import 'order_type_selector.dart';
+import 'cart_list.dart';
+import 'cart_total.dart';
 
 class CartPanel extends ConsumerWidget {
   const CartPanel({super.key});

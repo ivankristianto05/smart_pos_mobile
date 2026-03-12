@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../../core/theme/app_colors.dart';
-import '../../application/provider/order_type_provider.dart';
-import '../../domain/models/order_type.dart';
+import '../../../../../core/theme/app_colors.dart';
+import '../../../application/provider/order_type_provider.dart';
+import '../../../domain/models/order_type.dart';
 
 class OrderTypeSelector extends ConsumerWidget {
   const OrderTypeSelector({super.key});
