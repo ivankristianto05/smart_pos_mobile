@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_pos_mobile/core/theme/app_colors.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/cart_provider.dart';
+import 'package:smart_pos_mobile/core/utils/currency_formatter.dart';
+import '../../widgets/payment/order_summary_panel.dart';
+import '../../widgets/payment/payment_info_panel.dart';
+import '../../widgets/payment/pos_numpad_panel.dart';
 
 class PaymentScreen extends ConsumerStatefulWidget {
   const PaymentScreen({super.key});
@@ -16,11 +20,35 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
 
   int paidAmount = 0;
 
-  void setCash(int amount) {
+  void updateCash(int amount){
     setState(() {
       paidAmount = amount;
-      cashController.text = amount.toString();
+      cashController.text = CurrencyFormatter.rupiah(amount);
     });
+  }
+
+  void appendDigit(String digit){
+
+    String current = paidAmount.toString();
+    String newValue = current == "0" ? digit : current + digit;
+
+    int amount = int.tryParse(newValue) ?? 0;
+
+    updateCash(amount);
+  }
+
+  void backspace(){
+
+    String current = paidAmount.toString();
+
+    if(current.length <= 1){
+      updateCash(0);
+      return;
+    }
+
+    String newValue = current.substring(0,current.length - 1);
+
+    updateCash(int.parse(newValue));
   }
 
   @override
@@ -29,27 +57,34 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
     final cartItems = ref.watch(cartProvider);
 
     int total = cartItems.fold(
-        0, (sum, item) => sum + item.totalPrice.toInt());
+      0,
+      (sum,item)=> sum + item.totalPrice.toInt()
+    );
 
     int change = paidAmount - total;
 
     return Scaffold(
+
       backgroundColor: Colors.white,
 
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.primary,
         elevation: 1,
         iconTheme: const IconThemeData(color: Colors.black),
+
         title: const Text(
           "Payment",
           style: TextStyle(color: Colors.black),
         ),
+
         actions: [
+
           Padding(
-            padding: const EdgeInsets.only(right: 20),
+            padding: const EdgeInsets.only(right:20),
+
             child: Center(
               child: Text(
-                "Total: Rp $total",
+                "Total: Rp ${CurrencyFormatter.rupiah(total)}",
                 style: const TextStyle(
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -58,303 +93,73 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
               ),
             ),
           )
+
         ],
       ),
 
-      body: Row(
-        children: [
+body: Row(
+  children: [
 
-          /// =========================
-          /// ORDER SUMMARY
-          /// =========================
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.all(20),
-
-              decoration: const BoxDecoration(
-                border: Border(
-                  right: BorderSide(color: Color(0xFFE5E5E5)),
-                ),
-              ),
-
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  const Text(
-                    "Order Summary",
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: cartItems.length,
-                      itemBuilder: (context, index) {
-
-                        final item = cartItems[index];
-
-                        return ListTile(
-                          title: Text(item.product.name),
-                          subtitle: Text("x${item.quantity}"),
-                          trailing: Text("Rp ${item.totalPrice}"),
-                        );
-                      },
-                    ),
-                  ),
-
-                  const Divider(),
-
-                  Row(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceBetween,
-                    children: [
-
-                      const Text(
-                        "TOTAL",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-
-                      Text(
-                        "Rp $total",
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          /// =========================
-/// PAYMENT PANEL
-/// =========================
-Expanded(
-  flex: 3,
-  child: Padding(
-    padding: const EdgeInsets.all(30),
-
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-
-        /// =========================
-        /// TOTAL PAYMENT
-        /// =========================
-        const Text(
-          "Total Payment",
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
-          ),
-        ),
-
-        const SizedBox(height: 6),
-
-        Text(
-          "Rp $total",
-          style: const TextStyle(
-            fontSize: 40,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        const SizedBox(height: 30),
-
-        /// =========================
-        /// INPUT CASH
-        /// =========================
-        const Text(
-          "Input Cash",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        TextField(
-          controller: cashController,
-          keyboardType: TextInputType.number,
-          style: const TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-          ),
-
-          decoration: const InputDecoration(
-            prefixText: "Rp ",
-            prefixStyle: TextStyle(
-              fontSize: 24,
-              color: Colors.black,
-            ),
-
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.grey,
-                width: 2,
-              ),
-            ),
-
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.black,
-                width: 2,
-              ),
-            ),
-          ),
-
-          onChanged: (value) {
-            setState(() {
-              paidAmount = int.tryParse(value) ?? 0;
-            });
-          },
-        ),
-
-        const SizedBox(height: 25),
-
-        /// =========================
-        /// RECOMMENDED CASH
-        /// =========================
-        const Text(
-          "Recommended Cash",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        Wrap(
-          spacing: 10,
-          children: [
-
-            cashButton(50000),
-            cashButton(100000),
-            cashButton(200000),
-
-            ElevatedButton(
-              onPressed: () => setCash(total),
-              child: const Text("Exact"),
-            ),
-          ],
-        ),
-
-        const SizedBox(height: 30),
-
-        /// =========================
-        /// OTHER PAYMENT
-        /// =========================
-        const Text(
-          "Other Payment Method",
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        const SizedBox(height: 10),
-
-        Wrap(
-          spacing: 10,
-          children: [
-
-            paymentButton(Icons.qr_code, "QRIS"),
-            paymentButton(Icons.credit_card, "Card"),
-
-          ],
-        ),
-
-        const Spacer(),
-
-        /// =========================
-        /// CHANGE DISPLAY
-        /// =========================
-        Text(
-          change >= 0
-              ? "Change: Rp $change"
-              : "Cash kurang",
-          style: TextStyle(
-            fontSize: 20,
-            color: change >= 0
-                ? Colors.green
-                : Colors.red,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        const SizedBox(height: 20),
-
-        /// =========================
-        /// CONFIRM BUTTON
-        /// =========================
-        SizedBox(
-          width: double.infinity,
-          height: 60,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-            ),
-
-            onPressed: change >= 0
-                ? () {
-
-                    ref
-                        .read(cartProvider.notifier)
-                        .clearCart();
-
-                    Navigator.pop(context);
-
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(
-                      const SnackBar(
-                        content: Text("Payment Success"),
-                      ),
-                    );
-                  }
-                : null,
-
-            child: const Text(
-              "CONFIRM PAYMENT",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        )
-      ],
+    Expanded(
+      flex: 2,
+      child: OrderSummaryPanel(
+        cartItems: cartItems,
+        total: total,
+      ),
     ),
-  ),
-),
-        ],
+
+    Expanded(
+      flex: 4,
+      child: PaymentInfoPanel(
+        total: total,
+        change: change,
+        cashController: cashController,
+        onConfirm: () {
+          ref.read(cartProvider.notifier).clearCart();
+
+          Navigator.pop(context);
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Payment Success")),
+          );
+        },
       ),
+    ),
+
+    Expanded(
+      flex: 2,
+      child: PosNumpadPanel(
+        onDigit: appendDigit,
+        onBackspace: backspace,
+        onExact: () => updateCash(total),
+      ),
+    )
+
+  ],
+)
+
     );
   }
 
-  Widget cashButton(int amount) {
+  Widget numpadButton(String number){
 
     return ElevatedButton(
-      onPressed: () => setCash(amount),
-      child: Text("Rp $amount"),
+      onPressed: ()=> appendDigit(number),
+
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.grey.shade200
+      ),
+
+      child: Text(
+        number,
+        style: const TextStyle(
+          fontSize:22,
+          color: Colors.black,
+          fontWeight: FontWeight.bold
+        ),
+      ),
     );
+
   }
 
-  Widget paymentButton(IconData icon, String label) {
-
-    return ElevatedButton.icon(
-      onPressed: () {},
-      icon: Icon(icon),
-      label: Text(label),
-    );
-  }
 }

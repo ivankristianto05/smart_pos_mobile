@@ -19,7 +19,7 @@ class CartHeader extends ConsumerWidget {
         vertical: 14,
       ),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.08),
+        color: Colors.white,
         border: Border(
           bottom: BorderSide(
             color: Colors.grey.shade200,

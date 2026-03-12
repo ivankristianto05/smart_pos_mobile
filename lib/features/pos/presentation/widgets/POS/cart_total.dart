@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_pos_mobile/core/utils/currency_formatter.dart';
 
 class CartTotal extends StatelessWidget {
   final double total;
@@ -27,7 +28,7 @@ class CartTotal extends StatelessWidget {
             ),
           ),
           Text(
-            "Rp ${total.toStringAsFixed(0)}",
+            "Rp ${CurrencyFormatter.rupiah(total.toInt())}",
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,

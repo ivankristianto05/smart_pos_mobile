@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_pos_mobile/core/utils/currency_formatter.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../application/provider/cart_provider.dart';
 import '../../../domain/models/cart_item_model.dart';
@@ -252,7 +253,7 @@ class CartItemCard extends ConsumerWidget {
 
                     /// PRICE
                     Text(
-                      "Rp ${item.totalPrice.toStringAsFixed(0)}",
+                      "Rp ${CurrencyFormatter.rupiah(item.totalPrice.toInt())}",
                       style: const TextStyle(
                         color: AppColors.primaryDark,
                         fontWeight: FontWeight.bold,

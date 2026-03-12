@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_pos_mobile/core/utils/currency_formatter.dart';
 import 'package:smart_pos_mobile/features/pos/domain/models/cart_item_model.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../domain/models/product_model.dart';
@@ -268,7 +269,7 @@ class _ProductDialogState extends ConsumerState<ProductDialog> {
 
               /// TOTAL PRICE
               Text(
-                "Total : Rp ${totalPrice.toStringAsFixed(0)}",
+                "Total : Rp ${CurrencyFormatter.rupiah(totalPrice.toInt())}",
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_pos_mobile/core/utils/currency_formatter.dart';
 import '../../../../../core/theme/app_colors.dart';
 
 class ProductCard extends StatelessWidget {
@@ -51,7 +52,7 @@ class ProductCard extends StatelessWidget {
             ),
 
             Text(
-              "Rp ${price.toStringAsFixed(0)}",
+              "Rp ${CurrencyFormatter.rupiah(price.toInt())}",
               style: const TextStyle(
                 color: AppColors.primaryDark,
                 fontWeight: FontWeight.bold,
