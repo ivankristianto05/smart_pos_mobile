@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/customer_name_provider.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/table_number_provider.dart';
+import 'package:smart_pos_mobile/features/pos/presentation/widgets/dialogs/table_selector_dialog.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../application/provider/order_type_provider.dart';
 import '../../../domain/models/order_type.dart';
@@ -15,12 +18,17 @@ class _OrderTypeSelectorState extends ConsumerState<OrderTypeSelector> {
 
   final TextEditingController customerController = TextEditingController();
 
-  int tableNumber = 12;
+  int tableNumber = 1;
 
   @override
   Widget build(BuildContext context) {
 
-    final selectedType = ref.watch(orderTypeProvider);
+  final selectedType = ref.watch(orderTypeProvider);
+  final customerName = ref.watch(customerNameProvider);
+  if(customerController.text != customerName){
+    customerController.text = customerName;
+  }
+  final isDineIn = selectedType == OrderType.dineIn;
 
     return Padding(
       padding: const EdgeInsets.all(12),
@@ -61,81 +69,59 @@ class _OrderTypeSelectorState extends ConsumerState<OrderTypeSelector> {
 
           /// TABLE SELECTOR
           InkWell(
-            onTap: () async {
+  onTap: isDineIn
+      ? () async {
 
-              final result = await showDialog<int>(
-                context: context,
-                builder: (context) {
-
-                  final controller = TextEditingController(
-                    text: tableNumber.toString(),
-                  );
-
-                  return AlertDialog(
-
-                    title: const Text("Table Number"),
-
-                    content: TextField(
-                      controller: controller,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        hintText: "Enter table number",
-                      ),
-                    ),
-
-                    actions: [
-
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text("Cancel"),
-                      ),
-
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(
-                            context,
-                            int.tryParse(controller.text),
-                          );
-                        },
-                        child: const Text("OK"),
-                      ),
-
-                    ],
-                  );
-                },
+          final result = await showDialog<int>(
+            context: context,
+            builder: (context) {
+              return TableSelectorDialog(
+                selectedTable: tableNumber,
+                totalTables: 50,
               );
-
-              if (result != null) {
-                setState(() {
-                  tableNumber = result;
-                });
-              }
             },
+          );
 
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 10,
-              ),
+          if (result != null) {
+            setState(() {
+              tableNumber = result;
+            });
+            ref.read(tableNumberProvider.notifier).state = result;
+          }
+        }
+      : null,
 
-              decoration: BoxDecoration(
-                color: Colors.grey.shade100,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: Colors.grey.shade300,
-                ),
-              ),
+  child: Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: 14,
+      vertical: 10,
+    ),
 
-              child: Text(
-                "Table $tableNumber",
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ),
+    decoration: BoxDecoration(
+      color: isDineIn
+          ? Colors.grey.shade100
+          : Colors.grey.shade200,
+
+      borderRadius: BorderRadius.circular(10),
+
+      border: Border.all(
+        color: isDineIn
+            ? Colors.grey.shade300
+            : Colors.grey.shade300,
+      ),
+    ),
+
+    child: Text(
+      "Table $tableNumber",
+      style: TextStyle(
+        fontWeight: FontWeight.w600,
+        color: isDineIn
+            ? Colors.black
+            : Colors.grey,
+      ),
+    ),
+  ),
+),
 
           const SizedBox(width: 10),
 
@@ -154,6 +140,9 @@ class _OrderTypeSelectorState extends ConsumerState<OrderTypeSelector> {
 
               child: TextField(
                 controller: customerController,
+                onChanged: (value) {
+                  ref.read(customerNameProvider.notifier).state = value;
+                },
                 decoration: const InputDecoration(
                   hintText: "Customer name",
                   border: InputBorder.none,

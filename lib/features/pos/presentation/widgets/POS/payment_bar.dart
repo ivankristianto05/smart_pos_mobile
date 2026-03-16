@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/cart_provider.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/customer_name_provider.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/order_type_provider.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/saved_order_active_provider.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/table_number_provider.dart';
 import 'package:smart_pos_mobile/features/pos/presentation/pages/payment/payment_screen.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../dialogs/save_order_dialog.dart';
@@ -91,10 +94,9 @@ class PaymentBar extends ConsumerWidget {
   /// UPDATE ORDER
   ref.read(savedOrderProvider.notifier)
       .updateOrder(activeOrderId, cartItems);
-
   /// KOSONGKAN CART
   ref.read(cartProvider.notifier).clearCart();
-
+  ref.read(customerNameProvider.notifier).state = "";
   /// RESET ACTIVE ORDER
   ref.read(activeSavedOrderIdProvider.notifier).state = null;
 
@@ -112,18 +114,31 @@ class PaymentBar extends ConsumerWidget {
     /// ===============================
     /// SAVE ORDER BARU
     /// ===============================
-    showDialog(
-      context: context,
-      builder: (_) => SaveOrderDialog(
-        onSave: (name) {
+final orderType = ref.read(orderTypeProvider);
+final tableNumber = ref.read(tableNumberProvider);
+final customerName = ref.read(customerNameProvider);
 
-          ref.read(savedOrderProvider.notifier)
-              .saveOrder(name, cartItems);
+print("ORDER TYPE: $orderType");
+print("TABLE NUMBER: $tableNumber");
+print("CUSTOMER NAME: $customerName");
+ref.read(savedOrderProvider.notifier).saveOrder(
+  orderType: orderType,
+  tableNumber: tableNumber,
+  customerName: customerName,
+  items: cartItems,
+);
 
-          ref.read(cartProvider.notifier).clearCart();
-        },
-      ),
-    );
+/// kosongkan cart
+ref.read(cartProvider.notifier).clearCart();
+ref.read(customerNameProvider.notifier).state = "";
+
+
+ScaffoldMessenger.of(context).showSnackBar(
+  const SnackBar(
+    content: Text("Order berhasil disimpan"),
+    duration: Duration(seconds: 2),
+  ),
+);
 
   } else {
 

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/cart_provider.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/customer_name_provider.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/order_type_provider.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/saved_order_active_provider.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/saved_order_provider.dart';
-import '../../../domain/models/saved_order_model.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/table_number_provider.dart';
+import 'package:smart_pos_mobile/features/pos/application/utils/order_header_helper.dart';
+import '../../../domain/models/order_type.dart';
 
 class OpenOrderDialog extends ConsumerWidget {
   const OpenOrderDialog({super.key});
@@ -33,7 +37,18 @@ class OpenOrderDialog extends ConsumerWidget {
                 shrinkWrap: true,
                 itemCount: orders.length,
                 itemBuilder: (context, index) {
+
                   final order = orders[index];
+
+                  /// HEADER TEXT
+                  String orderHeader;
+
+                  if (order.orderType == OrderType.dineIn && order.tableNumber != null) {
+                    orderHeader =
+                        "${order.orderType.label} • Table ${order.tableNumber}";
+                  } else {
+                    orderHeader = order.orderType.label;
+                  }
 
                   return Card(
                     margin: const EdgeInsets.only(bottom: 10),
@@ -41,22 +56,33 @@ class OpenOrderDialog extends ConsumerWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(12),
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
 
-                          /// ORDER NAME
+                          /// ORDER TYPE + TABLE
                           Text(
-                            order.name,
+                            orderHeader,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                              fontSize: 15,
+                            ),
+                          ),
+
+                          const SizedBox(height: 2),
+
+                          /// CUSTOMER NAME
+                          Text(
+                            order.customerName.trim().isEmpty
+                                ? "Customer"
+                                : order.customerName,
+                            style: const TextStyle(
+                              fontSize: 14,
                             ),
                           ),
 
                           const SizedBox(height: 4),
 
-                          /// ITEM COUNT
+                          /// ITEM COUNT + TIME
                           Text(
                             "${order.items.length} items • ${formatTime(order.createdAt)}",
                             style: const TextStyle(
@@ -68,11 +94,10 @@ class OpenOrderDialog extends ConsumerWidget {
                           const SizedBox(height: 10),
 
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.end,
                             children: [
 
-                              /// DELETE BUTTON
+                              /// DELETE
                               TextButton.icon(
                                 icon: const Icon(
                                   Icons.delete_outline,
@@ -93,7 +118,7 @@ class OpenOrderDialog extends ConsumerWidget {
 
                               const SizedBox(width: 8),
 
-                              /// OPEN BUTTON
+                              /// OPEN
                               ElevatedButton.icon(
                                 icon: const Icon(
                                   Icons.lock_open,
@@ -102,18 +127,15 @@ class OpenOrderDialog extends ConsumerWidget {
                                 label: const Text("OPEN"),
                                 onPressed: () {
 
-                                  ref
-                                      .read(cartProvider.notifier)
-                                      .setCart(order.items);
+  /// set cart
+  ref.read(cartProvider.notifier).setCart(order.items);
 
-                                  ref
-                                      .read(
-                                          activeSavedOrderIdProvider
-                                              .notifier)
-                                      .state = order.id;
+  /// set active order
+  ref.read(activeSavedOrderIdProvider.notifier).state = order.id;
 
-                                  Navigator.pop(context);
-                                },
+  loadOrderHeader(ref, order);
+  Navigator.pop(context);
+}
                               ),
                             ],
                           )
@@ -127,9 +149,7 @@ class OpenOrderDialog extends ConsumerWidget {
     );
   }
 
-  /// =============================
   /// DELETE CONFIRMATION
-  /// =============================
   void _confirmDelete(
     BuildContext context,
     WidgetRef ref,
