@@ -18,11 +18,10 @@ class _OrderTypeSelectorState extends ConsumerState<OrderTypeSelector> {
 
   final TextEditingController customerController = TextEditingController();
 
-  int tableNumber = 1;
 
   @override
   Widget build(BuildContext context) {
-
+  final tableNumber = ref.watch(tableNumberProvider);
   final selectedType = ref.watch(orderTypeProvider);
   final customerName = ref.watch(customerNameProvider);
   if(customerController.text != customerName){
@@ -60,6 +59,9 @@ class _OrderTypeSelectorState extends ConsumerState<OrderTypeSelector> {
 
                 onChanged: (value) {
                   ref.read(orderTypeProvider.notifier).state = value!;
+                  if (value != OrderType.dineIn) {
+    ref.read(tableNumberProvider.notifier).state = null;
+  }
                 },
               ),
             ),
@@ -83,9 +85,6 @@ class _OrderTypeSelectorState extends ConsumerState<OrderTypeSelector> {
           );
 
           if (result != null) {
-            setState(() {
-              tableNumber = result;
-            });
             ref.read(tableNumberProvider.notifier).state = result;
           }
         }
@@ -112,7 +111,9 @@ class _OrderTypeSelectorState extends ConsumerState<OrderTypeSelector> {
     ),
 
     child: Text(
-      "Table $tableNumber",
+      tableNumber == null 
+      ? "Select Table" 
+      : "Table $tableNumber",
       style: TextStyle(
         fontWeight: FontWeight.w600,
         color: isDineIn

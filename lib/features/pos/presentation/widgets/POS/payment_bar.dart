@@ -5,6 +5,7 @@ import 'package:smart_pos_mobile/features/pos/application/provider/customer_name
 import 'package:smart_pos_mobile/features/pos/application/provider/order_type_provider.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/saved_order_active_provider.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/table_number_provider.dart';
+import 'package:smart_pos_mobile/features/pos/domain/models/transaction_model.dart';
 import 'package:smart_pos_mobile/features/pos/presentation/pages/payment/payment_screen.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../dialogs/save_order_dialog.dart';
@@ -97,7 +98,7 @@ class PaymentBar extends ConsumerWidget {
   /// KOSONGKAN CART
   ref.read(cartProvider.notifier).clearCart();
   ref.read(customerNameProvider.notifier).state = "";
-  /// RESET ACTIVE ORDER
+  ref.read(tableNumberProvider.notifier).state = null;
   ref.read(activeSavedOrderIdProvider.notifier).state = null;
 
   /// FEEDBACK USER
@@ -131,7 +132,7 @@ ref.read(savedOrderProvider.notifier).saveOrder(
 /// kosongkan cart
 ref.read(cartProvider.notifier).clearCart();
 ref.read(customerNameProvider.notifier).state = "";
-
+ref.read(tableNumberProvider.notifier).state = null;
 
 ScaffoldMessenger.of(context).showSnackBar(
   const SnackBar(
@@ -203,10 +204,26 @@ ScaffoldMessenger.of(context).showSnackBar(
 
     onPressed: hasOrder
     ? () {
+
+        final cartItems = ref.read(cartProvider);
+
+        final total = cartItems.fold<int>(
+          0,
+          (sum, item) => sum + item.totalPrice.toInt(),
+        );
+
+        final transaction = TransactionData(
+          items: cartItems,
+          total: total,
+          orderType: ref.read(orderTypeProvider),
+          tableNumber: ref.read(tableNumberProvider),
+          customerName: ref.read(customerNameProvider),
+        );
+
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => const PaymentScreen(),
+            builder: (_) => PaymentScreen(transaction: transaction),
           ),
         );
       }

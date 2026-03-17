@@ -4,8 +4,8 @@ import 'package:smart_pos_mobile/core/theme/app_colors.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/saved_order_provider.dart';
 
 class TableSelectorDialog extends ConsumerStatefulWidget {
-  final int selectedTable;
-  final int totalTables;
+  final int? selectedTable;
+  final int? totalTables;
 
   const TableSelectorDialog({
     super.key,
@@ -19,7 +19,7 @@ class TableSelectorDialog extends ConsumerStatefulWidget {
 
 class _TableSelectorDialogState extends ConsumerState<TableSelectorDialog> {
 
-  late int selected;
+  late int? selected;
 
   @override
   void initState() {
@@ -144,12 +144,13 @@ class _TableSelectorDialogState extends ConsumerState<TableSelectorDialog> {
                 const SizedBox(width: 10),
 
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context, selected);
-                  },
-                  child: const Text("Select"),
-                ),
-
+  onPressed: selected == null
+      ? null
+      : () {
+          Navigator.pop(context, selected);
+        },
+  child: const Text("Select"),
+),
               ],
             )
           ],

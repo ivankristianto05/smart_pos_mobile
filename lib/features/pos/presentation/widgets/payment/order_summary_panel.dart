@@ -4,11 +4,17 @@ import 'package:smart_pos_mobile/core/utils/currency_formatter.dart';
 class OrderSummaryPanel extends StatelessWidget {
   final List cartItems;
   final int total;
+  final String customerName;
+  final int? tableNumber;
+  final String orderType;
 
   const OrderSummaryPanel({
     super.key,
     required this.cartItems,
     required this.total,
+    required this.orderType,
+    required this.tableNumber,
+    required this.customerName,
   });
 
   @override
@@ -34,7 +40,32 @@ class OrderSummaryPanel extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
+          const SizedBox(height: 10),
 
+Text(
+  "Order Type: $orderType",
+  style: const TextStyle(fontSize: 14),
+),
+
+const SizedBox(height: 4),
+
+Text(
+  tableNumber == null 
+      ? "Table: -"
+      : "Table: $tableNumber",
+  style: const TextStyle(fontSize: 14),
+),
+
+const SizedBox(height: 4),
+
+Text(
+  customerName.isEmpty 
+      ? "Customer: -"
+      : "Customer: $customerName",
+  style: const TextStyle(fontSize: 14),
+),
+
+const SizedBox(height: 15),
           const SizedBox(height: 20),
 
           Expanded(

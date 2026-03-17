@@ -3,12 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_pos_mobile/core/theme/app_colors.dart';
 import 'package:smart_pos_mobile/features/pos/application/provider/cart_provider.dart';
 import 'package:smart_pos_mobile/core/utils/currency_formatter.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/customer_name_provider.dart';
+import 'package:smart_pos_mobile/features/pos/application/provider/table_number_provider.dart';
 import '../../widgets/payment/order_summary_panel.dart';
 import '../../widgets/payment/payment_info_panel.dart';
 import '../../widgets/payment/pos_numpad_panel.dart';
-
+import 'package:smart_pos_mobile/features/pos/domain/models/transaction_model.dart';
+import 'package:smart_pos_mobile/features/pos/domain/models/order_type.dart';
 class PaymentScreen extends ConsumerStatefulWidget {
-  const PaymentScreen({super.key});
+  final TransactionData transaction;
+  const PaymentScreen({super.key,required this.transaction,});
 
   @override
   ConsumerState<PaymentScreen> createState() => _PaymentScreenState();
@@ -54,12 +58,9 @@ class _PaymentScreenState extends ConsumerState<PaymentScreen> {
   @override
   Widget build(BuildContext context) {
 
-    final cartItems = ref.watch(cartProvider);
+    final cartItems = widget.transaction.items;
 
-    int total = cartItems.fold(
-      0,
-      (sum,item)=> sum + item.totalPrice.toInt()
-    );
+    int total = widget.transaction.total;
 
     int change = paidAmount - total;
 
@@ -105,6 +106,9 @@ body: Row(
       child: OrderSummaryPanel(
         cartItems: cartItems,
         total: total,
+        orderType: widget.transaction.orderType.label,
+        tableNumber: widget.transaction.tableNumber,
+        customerName: widget.transaction.customerName,
       ),
     ),
 
@@ -115,14 +119,20 @@ body: Row(
         change: change,
         cashController: cashController,
         onConfirm: () {
-          ref.read(cartProvider.notifier).clearCart();
 
-          Navigator.pop(context);
+  /// clear cart
+  ref.read(cartProvider.notifier).clearCart();
 
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Payment Success")),
-          );
-        },
+  /// reset input
+  ref.read(customerNameProvider.notifier).state = "";
+  ref.read(tableNumberProvider.notifier).state = null;
+
+  Navigator.pop(context);
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text("Payment Success")),
+  );
+},
       ),
     ),
 
